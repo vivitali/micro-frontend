@@ -1,17 +1,18 @@
 import { useState, useEffect } from "react";
-import { useParams } from "react-router";
+import { useParams } from "react-router-dom";
 import {
   Card,
   CardContent,
-  CardDescription,
-  CardFooter,
   CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
-import { Skeleton } from "@/components/ui/skeleton";
+  Typography,
+  Chip,
+  Button,
+  Divider,
+  Grid,
+  Box,
+  Skeleton,
+  Container,
+} from "@mui/material";
 
 const ClaimView = () => {
   const { id } = useParams();
@@ -53,87 +54,138 @@ const ClaimView = () => {
 
   if (loading)
     return (
-      <Card className="w-full max-w-lg mx-auto">
-        <CardHeader>
-          <Skeleton className="h-6 w-3/4" />
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-2">
-            <Skeleton className="h-4 w-full" />
-            <Skeleton className="h-4 w-full" />
-            <Skeleton className="h-4 w-2/3" />
-          </div>
-        </CardContent>
-      </Card>
+      <Container maxWidth="sm">
+        <Card sx={{ my: 4 }}>
+          <CardHeader title={<Skeleton variant="text" width="60%" />} />
+          <CardContent>
+            <Skeleton variant="text" width="100%" />
+            <Skeleton variant="text" width="100%" />
+            <Skeleton variant="text" width="70%" />
+          </CardContent>
+        </Card>
+      </Container>
     );
 
   if (error)
     return (
-      <Card className="w-full max-w-lg mx-auto border-red-200">
-        <CardHeader>
-          <CardTitle className="text-red-500">Error</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p>{error}</p>
-        </CardContent>
-      </Card>
+      <Container maxWidth="sm">
+        <Card sx={{ my: 4, border: "1px solid #ffcccc" }}>
+          <CardHeader title={<Typography color="error">Error</Typography>} />
+          <CardContent>
+            <Typography>{error}</Typography>
+          </CardContent>
+        </Card>
+      </Container>
     );
 
   return (
-    <Card className="w-full max-w-lg mx-auto">
-      <CardHeader className="pb-2">
-        <div className="flex justify-between items-center">
-          <CardTitle className="text-xl">Claim #{claim.claimNumber}</CardTitle>
-          <Badge variant={claim.status === "PENDING" ? "outline" : "default"}>
-            {claim.status}
-          </Badge>
-        </div>
-        <CardDescription>
-          Submitted on {new Date(claim.submittedDate).toLocaleDateString()}
-        </CardDescription>
-      </CardHeader>
+    <Container maxWidth="sm">
+      <Card sx={{ my: 4 }}>
+        <CardHeader
+          title={
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
+              <Typography variant="h6">Claim #{claim.claimNumber}</Typography>
+              <Chip
+                label={claim.status}
+                variant={claim.status === "PENDING" ? "outlined" : "filled"}
+                color="primary"
+                size="small"
+              />
+            </Box>
+          }
+          subheader={`Submitted on ${new Date(
+            claim.submittedDate
+          ).toLocaleDateString()}`}
+          sx={{ pb: 1 }}
+        />
 
-      <CardContent className="pt-2">
-        <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-sm">
-          <span className="text-muted-foreground">Amount:</span>
-          <span className="font-medium">${claim.claimAmount.toFixed(2)}</span>
+        <CardContent sx={{ pt: 1 }}>
+          <Grid container spacing={2}>
+            <Grid item xs={6}>
+              <Typography color="text.secondary" variant="body2">
+                Amount:
+              </Typography>
+            </Grid>
+            <Grid item xs={6}>
+              <Typography fontWeight="medium" variant="body2">
+                ${claim.claimAmount.toFixed(2)}
+              </Typography>
+            </Grid>
 
-          <span className="text-muted-foreground">Policy Holder:</span>
-          <span className="font-medium">{claim.policyHolder}</span>
+            <Grid item xs={6}>
+              <Typography color="text.secondary" variant="body2">
+                Policy Holder:
+              </Typography>
+            </Grid>
+            <Grid item xs={6}>
+              <Typography fontWeight="medium" variant="body2">
+                {claim.policyHolder}
+              </Typography>
+            </Grid>
 
-          <span className="text-muted-foreground">Coverage:</span>
-          <span className="font-medium">{claim.coverageType}</span>
+            <Grid item xs={6}>
+              <Typography color="text.secondary" variant="body2">
+                Coverage:
+              </Typography>
+            </Grid>
+            <Grid item xs={6}>
+              <Typography fontWeight="medium" variant="body2">
+                {claim.coverageType}
+              </Typography>
+            </Grid>
 
-          <span className="text-muted-foreground">Assigned To:</span>
-          <span className="font-medium">{claim.assignedTo}</span>
-        </div>
+            <Grid item xs={6}>
+              <Typography color="text.secondary" variant="body2">
+                Assigned To:
+              </Typography>
+            </Grid>
+            <Grid item xs={6}>
+              <Typography fontWeight="medium" variant="body2">
+                {claim.assignedTo}
+              </Typography>
+            </Grid>
+          </Grid>
 
-        <Separator className="my-3" />
+          <Divider sx={{ my: 2 }} />
 
-        <div className="text-sm">
-          <p className="text-muted-foreground font-medium mb-1">Description:</p>
-          <p>{claim.description}</p>
-        </div>
-      </CardContent>
+          <Box>
+            <Typography
+              color="text.secondary"
+              variant="body2"
+              fontWeight="medium"
+              gutterBottom
+            >
+              Description:
+            </Typography>
+            <Typography variant="body2">{claim.description}</Typography>
+          </Box>
 
-      <CardFooter className="flex justify-between pt-2">
-        <Button
-          variant="default"
-          size="sm"
-          onClick={() => (window.location.href = `/raw-claim/${id}`)}
-        >
-          View Raw Data
-        </Button>
+          <Box sx={{ display: "flex", justifyContent: "space-between", mt: 3 }}>
+            <Button
+              variant="contained"
+              size="small"
+              onClick={() => (window.location.href = `/raw-claim/${id}`)}
+            >
+              View Raw Data
+            </Button>
 
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => window.history.back()}
-        >
-          Back
-        </Button>
-      </CardFooter>
-    </Card>
+            <Button
+              variant="outlined"
+              size="small"
+              onClick={() => window.history.back()}
+            >
+              Back
+            </Button>
+          </Box>
+        </CardContent>
+      </Card>
+    </Container>
   );
 };
 

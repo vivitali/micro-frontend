@@ -1,8 +1,16 @@
 import { lazy } from "react";
-import { Link } from "react-router";
+import { Link } from "react-router-dom";
+import {
+  Typography,
+  Container,
+  Box,
+  List,
+  ListItem,
+  Button,
+} from "@mui/material";
 
-const ClaimView = lazy(() => import("./components/ClaimViewPlain"));
-const ClaimRaw = lazy(() => import("./components/ClaimRawPlain"));
+const ClaimView = lazy(() => import("./components/ClaimView"));
+const ClaimRaw = lazy(() => import("./components/ClaimRaw"));
 
 export const routes = [
   {
@@ -16,19 +24,30 @@ export const routes = [
   {
     path: "/",
     element: (
-      <div>
-        <h1>Welcome to the Claims App</h1>
-        <nav>
-          <ul>
-            <li>
-              <Link to="/claim/1">View Claim</Link>
-            </li>
-            <li>
-              <Link to="/raw-claim/1">View Raw Claim</Link>
-            </li>
-          </ul>
-        </nav>
-      </div>
+      <Container maxWidth="md" sx={{ py: 4 }}>
+        <Typography variant="h3" component="h1" gutterBottom>
+          Welcome to the Claims App
+        </Typography>
+        <Box sx={{ mt: 4 }}>
+          <List>
+            <ListItem>
+              <Button
+                component={Link}
+                to="/claim/1"
+                variant="contained"
+                sx={{ mr: 2 }}
+              >
+                View Claim
+              </Button>
+            </ListItem>
+            <ListItem>
+              <Button component={Link} to="/raw-claim/1" variant="outlined">
+                View Raw Claim
+              </Button>
+            </ListItem>
+          </List>
+        </Box>
+      </Container>
     ),
   },
 ];

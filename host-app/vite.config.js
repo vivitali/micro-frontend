@@ -15,7 +15,10 @@ export default defineConfig({
       shared: {
         react: { singleton: true, requiredVersion: "^19.0.0" },
         "react-dom": { singleton: true, requiredVersion: "^19.0.0" },
-        "react-router": { singleton: true, requiredVersion: "^7.5.1" },
+        "react-router-dom": { singleton: true, requiredVersion: "^7.5.1" },
+        "@mui/material": { singleton: true },
+        "@emotion/react": { singleton: true },
+        "@emotion/styled": { singleton: true },
       },
     }),
   ],

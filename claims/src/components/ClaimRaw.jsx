@@ -1,16 +1,38 @@
 import { useState, useEffect } from "react";
-import { useParams } from "react-router";
+import { useParams } from "react-router-dom";
 import {
   Card,
   CardContent,
-  CardFooter,
   CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Copy } from "lucide-react";
+  Typography,
+  Button,
+  Box,
+  Tabs,
+  Tab,
+  Paper,
+  Skeleton,
+  Grid,
+  Container,
+  Tooltip,
+  IconButton,
+} from "@mui/material";
+import ContentCopyIcon from "@mui/icons-material/ContentCopy";
+
+function TabPanel(props) {
+  const { children, value, index, ...other } = props;
+
+  return (
+    <div
+      role="tabpanel"
+      hidden={value !== index}
+      id={`claim-tabpanel-${index}`}
+      aria-labelledby={`claim-tab-${index}`}
+      {...other}
+    >
+      {value === index && <Box sx={{ p: 3 }}>{children}</Box>}
+    </div>
+  );
+}
 
 const RawClaimView = () => {
   const { id } = useParams();
@@ -18,6 +40,7 @@ const RawClaimView = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [copied, setCopied] = useState(false);
+  const [tabValue, setTabValue] = useState(0);
 
   useEffect(() => {
     const fetchRawClaim = async () => {
@@ -173,110 +196,178 @@ const RawClaimView = () => {
     setTimeout(() => setCopied(false), 2000);
   };
 
+  const handleTabChange = (event, newValue) => {
+    setTabValue(newValue);
+  };
+
   if (loading)
     return (
-      <Card className="w-full max-w-xl mx-auto">
-        <CardHeader>
-          <Skeleton className="h-6 w-1/2" />
-        </CardHeader>
-        <CardContent>
-          <Skeleton className="h-64 w-full" />
-        </CardContent>
-      </Card>
+      <Container maxWidth="md">
+        <Card sx={{ my: 4 }}>
+          <CardHeader title={<Skeleton variant="text" width="60%" />} />
+          <CardContent>
+            <Skeleton variant="rectangular" width="100%" height={200} />
+          </CardContent>
+        </Card>
+      </Container>
     );
 
   if (error)
     return (
-      <Card className="w-full max-w-xl mx-auto border-red-200">
-        <CardHeader>
-          <CardTitle className="text-red-500">Error</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p>{error}</p>
-        </CardContent>
-      </Card>
+      <Container maxWidth="md">
+        <Card sx={{ my: 4, border: "1px solid #ffcccc" }}>
+          <CardHeader title={<Typography color="error">Error</Typography>} />
+          <CardContent>
+            <Typography>{error}</Typography>
+          </CardContent>
+        </Card>
+      </Container>
     );
 
   return (
-    <Card className="w-full max-w-xl mx-auto">
-      <CardHeader className="flex flex-row items-center justify-between pb-2">
-        <CardTitle className="text-lg">
-          Raw Data: Claim #{rawData.claim.claimNumber}
-        </CardTitle>
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={copyToClipboard}
-          className="h-8 px-2"
-        >
-          <Copy className="h-4 w-4 mr-1" />
-          {copied ? "Copied!" : "Copy"}
-        </Button>
-      </CardHeader>
+    <Container maxWidth="md">
+      <Card sx={{ my: 4 }}>
+        <CardHeader
+          title={
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
+              <Typography variant="h6">
+                Raw Data: Claim #{rawData.claim.claimNumber}
+              </Typography>
+              <Tooltip title={copied ? "Copied!" : "Copy to clipboard"}>
+                <IconButton onClick={copyToClipboard} size="small">
+                  <ContentCopyIcon fontSize="small" />
+                </IconButton>
+              </Tooltip>
+            </Box>
+          }
+        />
 
-      <CardContent className="p-0">
-        <Tabs defaultValue="json">
-          <TabsList className="w-full">
-            <TabsTrigger value="json" className="flex-1">
-              JSON
-            </TabsTrigger>
-            <TabsTrigger value="info" className="flex-1">
-              Info
-            </TabsTrigger>
-          </TabsList>
+        <CardContent sx={{ pb: 1 }}>
+          <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+            <Tabs
+              value={tabValue}
+              onChange={handleTabChange}
+              aria-label="claim data tabs"
+            >
+              <Tab label="JSON" id="claim-tab-0" />
+              <Tab label="Info" id="claim-tab-1" />
+            </Tabs>
+          </Box>
 
-          <TabsContent value="json" className="m-0">
-            <div className="bg-muted rounded-md overflow-auto max-h-80">
-              <pre className="text-xs p-4 whitespace-pre-wrap">
+          <TabPanel value={tabValue} index={0}>
+            <Paper
+              variant="outlined"
+              sx={{
+                maxHeight: 400,
+                overflow: "auto",
+                bgcolor: "grey.100",
+                p: 2,
+              }}
+            >
+              <pre
+                style={{
+                  margin: 0,
+                  fontSize: "0.75rem",
+                  whiteSpace: "pre-wrap",
+                }}
+              >
                 {JSON.stringify(rawData, null, 2)}
               </pre>
-            </div>
-          </TabsContent>
+            </Paper>
+          </TabPanel>
 
-          <TabsContent value="info" className="m-0 p-4">
-            <dl className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
-              <dt className="text-muted-foreground">Claim ID:</dt>
-              <dd>{rawData.claimId}</dd>
+          <TabPanel value={tabValue} index={1}>
+            <Grid container spacing={2}>
+              <Grid item xs={6}>
+                <Typography color="text.secondary" variant="body2">
+                  Claim ID:
+                </Typography>
+              </Grid>
+              <Grid item xs={6}>
+                <Typography variant="body2">{rawData.claimId}</Typography>
+              </Grid>
 
-              <dt className="text-muted-foreground">Status:</dt>
-              <dd>{rawData.claim.status}</dd>
+              <Grid item xs={6}>
+                <Typography color="text.secondary" variant="body2">
+                  Status:
+                </Typography>
+              </Grid>
+              <Grid item xs={6}>
+                <Typography variant="body2">{rawData.claim.status}</Typography>
+              </Grid>
 
-              <dt className="text-muted-foreground">Filed:</dt>
-              <dd>{new Date(rawData.claim.filingDate).toLocaleDateString()}</dd>
+              <Grid item xs={6}>
+                <Typography color="text.secondary" variant="body2">
+                  Filed:
+                </Typography>
+              </Grid>
+              <Grid item xs={6}>
+                <Typography variant="body2">
+                  {new Date(rawData.claim.filingDate).toLocaleDateString()}
+                </Typography>
+              </Grid>
 
-              <dt className="text-muted-foreground">Incident:</dt>
-              <dd>
-                {new Date(rawData.claim.incidentDate).toLocaleDateString()}
-              </dd>
+              <Grid item xs={6}>
+                <Typography color="text.secondary" variant="body2">
+                  Incident:
+                </Typography>
+              </Grid>
+              <Grid item xs={6}>
+                <Typography variant="body2">
+                  {new Date(rawData.claim.incidentDate).toLocaleDateString()}
+                </Typography>
+              </Grid>
 
-              <dt className="text-muted-foreground">Policy #:</dt>
-              <dd>{rawData.policy.policyNumber}</dd>
+              <Grid item xs={6}>
+                <Typography color="text.secondary" variant="body2">
+                  Policy #:
+                </Typography>
+              </Grid>
+              <Grid item xs={6}>
+                <Typography variant="body2">
+                  {rawData.policy.policyNumber}
+                </Typography>
+              </Grid>
 
-              <dt className="text-muted-foreground">Documents:</dt>
-              <dd>{rawData.claim.documents.length} files</dd>
-            </dl>
-          </TabsContent>
-        </Tabs>
-      </CardContent>
+              <Grid item xs={6}>
+                <Typography color="text.secondary" variant="body2">
+                  Documents:
+                </Typography>
+              </Grid>
+              <Grid item xs={6}>
+                <Typography variant="body2">
+                  {rawData.claim.documents.length} files
+                </Typography>
+              </Grid>
+            </Grid>
+          </TabPanel>
 
-      <CardFooter className="flex justify-between pt-4">
-        <Button
-          variant="default"
-          size="sm"
-          onClick={() => (window.location.href = `/claim/${id}`)}
-        >
-          View Formatted
-        </Button>
+          <Box sx={{ display: "flex", justifyContent: "space-between", mt: 3 }}>
+            <Button
+              variant="contained"
+              size="small"
+              onClick={() => (window.location.href = `/claim/${id}`)}
+            >
+              View Formatted
+            </Button>
 
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => window.history.back()}
-        >
-          Back
-        </Button>
-      </CardFooter>
-    </Card>
+            <Button
+              variant="outlined"
+              size="small"
+              onClick={() => window.history.back()}
+            >
+              Back
+            </Button>
+          </Box>
+        </CardContent>
+      </Card>
+    </Container>
   );
 };
 
