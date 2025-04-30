@@ -14,8 +14,8 @@ export default defineConfig({
       filename: "remoteEntry.js",
       exposes: {
         "./routes": "./src/routing.jsx",
-        "./ClaimView": "./src/components/ClaimView.jsx",
-        "./RawClaimView": "./src/components/ClaimRaw.jsx",
+        "./ClaimView": "./src/components/ClaimViewPlain.jsx",
+        "./RawClaimView": "./src/components/ClaimRawPlain.jsx",
       },
       shared: {
         react: { singleton: true, requiredVersion: "^19.0.0" },
