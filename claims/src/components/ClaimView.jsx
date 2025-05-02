@@ -43,7 +43,7 @@ const ClaimView = () => {
           setClaim(mockResponse);
           setLoading(false);
         }, 800);
-      } catch (err) {
+      } catch {
         setError("Failed to load claim data");
         setLoading(false);
       }

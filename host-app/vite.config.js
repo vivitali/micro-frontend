@@ -1,16 +1,17 @@
+// host-app/vite.config.js
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
-import { federation } from "@module-federation/vite";
+import federation from "@originjs/vite-plugin-federation";
+import path from "path";
 
-// https://vite.dev/config/
 export default defineConfig({
   plugins: [
     react(),
     federation({
-      name: "host-app",
+      name: "host_app",
       remotes: {
-        claims: "http://localhost:5001/assets/remoteEntry.js",
-        providers: "http://localhost:5002/assets/remoteEntry.js", // Add this line
+        // Important: This path should match where the providers app exposes its remoteEntry.js
+        providers: "http://localhost:5002/remoteEntry.js",
       },
       shared: {
         react: { singleton: true, requiredVersion: "^19.0.0" },
@@ -36,5 +37,8 @@ export default defineConfig({
   server: {
     port: 5000,
     strictPort: true,
+    headers: {
+      "Access-Control-Allow-Origin": "*",
+    },
   },
 });

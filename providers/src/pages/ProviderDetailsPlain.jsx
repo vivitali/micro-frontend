@@ -1,7 +1,7 @@
 import React from "react";
 
 function ProviderDetailsPlain() {
-  return <div>ProviderDetailsPlain</div>;
+  return <div>ProviderlkasjdalksjdlkjaslkdaslkdlkDetailsPlain</div>;
 }
 
 export default ProviderDetailsPlain;
