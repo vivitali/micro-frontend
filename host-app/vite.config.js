@@ -11,7 +11,7 @@ export default defineConfig({
       name: "host_app",
       remotes: {
         // Important: This path should match where the providers app exposes its remoteEntry.js
-        providers: "http://localhost:5002/remoteEntry.js",
+        providers: "http://localhost:5002/assets/remoteEntry.js",
       },
       shared: {
         react: { singleton: true, requiredVersion: "^19.0.0" },
